@@ -45,6 +45,7 @@
     "gatsby-source-filesystem": "^2.1.0",
     "gatsby-transformer-yaml": "^2.2.0",
     "get-pkg-repo": "^4.1.0",
+    "git-branch": "^2.0.1",
     "github-slugger": "^1.2.1",
     "html-react-parser": "^0.9.1",
     "jest": "^24.9.0",

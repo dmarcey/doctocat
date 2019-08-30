@@ -3,9 +3,12 @@ const readPkgUp = require('read-pkg-up')
 const getPkgRepo = require('get-pkg-repo')
 const axios = require('axios')
 const uniqBy = require('lodash.uniqby')
+const branch = require('git-branch')
 
 exports.createPages = async ({graphql, actions}, themeOptions) => {
   const repo = getPkgRepo(readPkgUp.sync().package)
+
+  const currentBranch = await branch()
 
   const {data} = await graphql(`
     {
@@ -44,7 +47,11 @@ exports.createPages = async ({graphql, actions}, themeOptions) => {
 
       const editUrl = getEditUrl(repo, fileRelativePath)
 
-      const contributors = await fetchContributors(repo, fileRelativePath)
+      const contributors = await fetchContributors(
+        repo,
+        fileRelativePath,
+        currentBranch,
+      )
 
       actions.createPage({
         path: pagePath,
@@ -66,10 +73,10 @@ function getEditUrl(repo, filePath) {
   return `https://github.com/${repo.user}/${repo.project}/edit/master/${filePath}`
 }
 
-async function fetchContributors(repo, filePath) {
+async function fetchContributors(repo, filePath, branch) {
   try {
     const {data} = await axios.get(
-      `https://api.github.com/repos/${repo.user}/${repo.project}/commits?path=${filePath}`,
+      `https://api.github.com/repos/${repo.user}/${repo.project}/commits?path=${filePath}&sha=${branch}`,
     )
 
     const commits = data
